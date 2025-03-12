@@ -2,39 +2,41 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Adicionando estilo CSS para fundo degradê
+st.markdown(
+    """
+    <style>
+    body {
+        background: linear-gradient(135deg, #FF4C4C, #000000);
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
-print(df.columns)  # Isso mostrará todas as colunas disponíveis no terminal
 
 df["Valor (R$)"] = df["Valor (R$)"].astype(str).str.replace(r"[^\d.,-]", "", regex=True)
 df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".").astype(float)
-print(df["Valor (R$)"].dtype)
-print(df["Valor (R$)"].head(10))  # Ver as primeiras 10 linhas
-
 df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
-
-
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 
 # Criar filtros interativos (segmentações de dados)
 st.sidebar.header("Filtros")
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
-
-# Alterado para multiselect para permitir selecionar vários dias
 dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s) da Semana", 
                                                 df["Dia do Pagamento"].unique(), 
                                                 default=df["Dia do Pagamento"].unique())
 
-# Filtragem correta usando .isin() para os dias da semana
 df_filtrado = df[
-    (df["Mês do Pagamento"] == mes_selecionado) &
+    (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
 
-# Exibir os dados filtrados (opcional para teste)
-st.write(df_filtrado)
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
 fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
@@ -52,14 +54,6 @@ st.subheader("Receita por Carro")
 fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
               names="Carros", values="Valor (R$)", title="Ganhos por Carro")
 st.plotly_chart(fig3)
-
-
-#df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce').fillna(0)
-
-
-# Filtrar apenas despesas e somar os valores corretamente
-total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
-
 
 # Mostrar totais
 st.subheader("Totais")
