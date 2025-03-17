@@ -24,7 +24,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+import pandas as pd
+import plotly.express as px
 
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
