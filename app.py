@@ -82,7 +82,7 @@ df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 
 # Adiciona o logo na barra lateral
-st.sidebar.image("logo_fj.jpg", use_column_width=True)  
+st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
 # Criar filtros interativos (segmentações de dados)
 st.sidebar.header("Filtros")
