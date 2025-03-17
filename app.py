@@ -29,12 +29,12 @@ st.markdown("""
         /* Cor da barra lateral */
         section[data-testid="stSidebar"] {
             background-color: black;
-            color: white;
+            color: red;
         }
 
         /* Ajuste para os textos dentro da barra lateral */
         section[data-testid="stSidebar"] * {
-            color: white !important;
+            color: red !important;
         }
 
         /* Ajuste específico para os meses no selectbox */
@@ -58,7 +58,7 @@ st.markdown("""
         }
 
         .titulo-texto {
-            font-size: 50px;
+            font-size: 80px;
             font-weight: bold;
             font-family: 'Arial', sans-serif;
             color: white;
