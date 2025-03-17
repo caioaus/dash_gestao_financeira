@@ -31,14 +31,18 @@ st.markdown("""
             background-color: black;
             color: white;
         }
-        
+
         /* Ajuste para os textos dentro da barra lateral */
         section[data-testid="stSidebar"] * {
             color: white !important;
         }
+
+        /* Ajuste específico para os meses no selectbox */
+        section[data-testid="stSidebar"] select {
+            color: black !important;
+        }
     </style>
 """, unsafe_allow_html=True)
-
 import pandas as pd
 import plotly.express as px
 
@@ -63,6 +67,7 @@ df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
+st.title("Gestão Financeira")
 
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
