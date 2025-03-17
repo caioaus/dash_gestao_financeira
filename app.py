@@ -58,7 +58,7 @@ st.markdown("""
         }
 
         .titulo-texto {
-            font-size: 80px;
+            font-size: 180px;
             font-weight: bold;
             font-family: 'Arial', sans-serif;
             color: white;
