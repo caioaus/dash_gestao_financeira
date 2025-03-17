@@ -81,6 +81,9 @@ df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 
+# Adiciona o logo na barra lateral
+st.sidebar.image("logo_fj.jpg", use_column_width=True)  
+
 # Criar filtros interativos (segmentações de dados)
 st.sidebar.header("Filtros")
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
@@ -92,6 +95,7 @@ df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
+st.image("logo.jpg", width=150)  # Ajuste o tamanho conforme necessário
 
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
