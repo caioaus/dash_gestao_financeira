@@ -95,7 +95,7 @@ df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
-st.image("logo_fj.jpg", width=150)  # Ajuste o tamanho conforme necessário
+st.image("logo_fj.jpg", width=180)  # Ajuste o tamanho conforme necessário
 
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
