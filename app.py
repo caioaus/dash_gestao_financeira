@@ -69,8 +69,6 @@ st.markdown("""
         <p class="titulo-texto">Gestão Financeira</p>
     </div>
 """, unsafe_allow_html=True)
-
-st.image("logo_fj.jpg", width=180)  # Ajuste o tamanho conforme necessário
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
