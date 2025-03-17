@@ -5,12 +5,12 @@ st.markdown(
         /* Fundo com degradê */
         .stApp {
             background: linear-gradient(135deg, #FF4136, #111);
-            color: black;
+            color: white;
         }
         
         /* Ajusta a cor do texto */
         h1, h2, h3, h4, h5, h6, p, .stTextInput, .stSelectbox, .stButton {
-            color: black !important;
+            color: white !important;
         }
 
         /* Estiliza os gráficos */
@@ -39,7 +39,7 @@ st.markdown("""
 
         /* Ajuste específico para os meses no selectbox */
         section[data-testid="stSidebar"] select {
-            color: black !important;
+            color: red !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -58,7 +58,7 @@ st.markdown("""
         }
 
         .titulo-texto {
-            font-size: 40px;
+            font-size: 50px;
             font-weight: bold;
             font-family: 'Arial', sans-serif;
             color: white;
