@@ -48,6 +48,7 @@ import plotly.express as px
 
 st.markdown("""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
         /* Estilização do título */
         .titulo-container {
             background-color: #800000;  /* Um tom de vermelho escuro elegante */
@@ -58,9 +59,9 @@ st.markdown("""
         }
 
         .titulo-texto {
-            font-size: 180px;
+            font-size: 45px;
             font-weight: bold;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
             color: white;
         }
     </style>
