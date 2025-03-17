@@ -46,6 +46,31 @@ st.markdown("""
 import pandas as pd
 import plotly.express as px
 
+st.markdown("""
+    <style>
+        /* Estilização do título */
+        .titulo-container {
+            background-color: #800000;  /* Um tom de vermelho escuro elegante */
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5); /* Efeito de relevo */
+        }
+
+        .titulo-texto {
+            font-size: 32px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+    </style>
+
+    <div class="titulo-container">
+        <p class="titulo-texto">Gestão Financeira</p>
+    </div>
+""", unsafe_allow_html=True)
+
+
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
