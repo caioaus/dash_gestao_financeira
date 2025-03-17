@@ -1,19 +1,30 @@
 import streamlit as st
-# Personalizar o fundo do app com CSS
+# Adicionar estilo para fundo com degradê de vermelho para preto
 st.markdown(
     """
     <style>
-    .main {
-        background: linear-gradient(to bottom, #FF4C4C, #1A1A1A); /* Vermelho para preto */
-        color: white;  /* Cor do texto */
-        padding: 10px;
-    }
+        /* Fundo com degradê */
+        .stApp {
+            background: linear-gradient(135deg, #FF4136, #111);
+            color: white;
+        }
+        
+        /* Ajusta a cor do texto */
+        h1, h2, h3, h4, h5, h6, p, .stTextInput, .stSelectbox, .stButton {
+            color: white !important;
+        }
+
+        /* Estiliza os gráficos */
+        .stPlotlyChart {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
-import pandas as pd
-import plotly.express as px
+
 
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
