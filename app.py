@@ -27,7 +27,7 @@ st.markdown(
 
 
 # Carregar os dados
-arquivo_excel = "dashboard_app/Relatorio_Mensal_py.xlsx"
+arquivo_excel = "C:/Users/Caio/OneDrive/Área de Trabalho/DADOS FJ/dashboard_app/Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
 
 df["Valor (R$)"] = df["Valor (R$)"].astype(str).str.replace(r"[^\d.,-]", "", regex=True)
