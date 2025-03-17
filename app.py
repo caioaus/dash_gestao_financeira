@@ -70,7 +70,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-
+st.image("logo_fj.jpg", width=180)  # Ajuste o tamanho conforme necessário
 # Carregar os dados
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
@@ -95,7 +95,7 @@ df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
-st.image("logo_fj.jpg", width=180)  # Ajuste o tamanho conforme necessário
+
 
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
