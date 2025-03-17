@@ -5,12 +5,12 @@ st.markdown(
         /* Fundo com degradê */
         .stApp {
             background: linear-gradient(135deg, #FF4136, #111);
-            color: white;
+            color: black;
         }
         
         /* Ajusta a cor do texto */
         h1, h2, h3, h4, h5, h6, p, .stTextInput, .stSelectbox, .stButton {
-            color: white !important;
+            color: black !important;
         }
 
         /* Estiliza os gráficos */
@@ -58,7 +58,7 @@ st.markdown("""
         }
 
         .titulo-texto {
-            font-size: 32px;
+            font-size: 40px;
             font-weight: bold;
             font-family: 'Arial', sans-serif;
             color: white;
@@ -92,7 +92,6 @@ df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
-st.title("Gestão Financeira")
 
 # Criar gráfico de barras para Despesas dos Carros
 st.subheader("Despesas dos Carros")
