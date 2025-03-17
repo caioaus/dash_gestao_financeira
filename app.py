@@ -1,5 +1,4 @@
 import streamlit as st
-# Adicionar estilo para fundo com degradê de vermelho para preto
 st.markdown(
     """
     <style>
@@ -24,6 +23,22 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+st.markdown("""
+    <style>
+        /* Cor da barra lateral */
+        section[data-testid="stSidebar"] {
+            background-color: black;
+            color: white;
+        }
+        
+        /* Ajuste para os textos dentro da barra lateral */
+        section[data-testid="stSidebar"] * {
+            color: white !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 import pandas as pd
 import plotly.express as px
 
@@ -74,6 +89,7 @@ total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)
 lucro = total_receitas - total_despesas
 dizimo = lucro * 0.1
 
+st.write(df_filtrado)
 st.write(f"Total de Despesas: R$ {total_despesas:,.2f}")
 st.write(f"Total de Receitas: R$ {total_receitas:,.2f}")
 st.write(f"Lucro: R$ {lucro:,.2f}")
