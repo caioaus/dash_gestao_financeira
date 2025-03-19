@@ -1,4 +1,3 @@
-import streamlit as st
 st.markdown(
     """
     <style>
@@ -80,62 +79,40 @@ df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 
-# Mapear nomes dos meses para números
-meses_map = {
-    "jan": 1, "fev": 2, "mar": 3, "abr": 4, "mai": 5, "jun": 6,
-    "jul": 7, "ago": 8, "set": 9, "out": 10, "nov": 11, "dez": 12
-}
-df["Mês do Pagamento"] = df["Mês do Pagamento"].map(meses_map)
-# Criar nova coluna de trimestre
-df["Trimestre"] = pd.to_datetime(df["Mês do Pagamento"], format='%m').dt.to_period("Q")
+# Adiciona o logo na barra lateral
+st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
-# Criar filtros interativos
+# Criar filtros interativos (segmentações de dados)
 st.sidebar.header("Filtros")
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
 dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s) da Semana", 
                                                 df["Dia do Pagamento"].unique(), 
                                                 default=df["Dia do Pagamento"].unique())
-trimestre_selecionado = st.sidebar.selectbox("Selecione o Trimestre", df["Trimestre"].astype(str).unique())
-# Adiciona o logo na barra lateral
-st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
 df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
 
-# Criar layout em matriz 2x2
-col1, col2 = st.columns(2)
-col3, col4 = st.columns(2)
 
 # Criar gráfico de barras para Despesas dos Carros
-with col1:
-    st.subheader("Despesas dos Carros")
-    fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
-                  x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
-    st.plotly_chart(fig1)
+st.subheader("Despesas dos Carros")
+fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
+              x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
+st.plotly_chart(fig1)
 
 # Criar gráfico de colunas para Despesas Gerais
-with col2:
-    st.subheader("Despesas Gerais")
-    fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
-                  x="Tipo", y="Valor (R$)", title="Despesas Gerais")
-    st.plotly_chart(fig2)
+st.subheader("Despesas Gerais")
+fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
+              x="Tipo", y="Valor (R$)", title="Despesas Gerais")
+st.plotly_chart(fig2)
 
 # Criar gráfico de pizza para Receitas
-with col3:
-    st.subheader("Receita por Carro")
-    fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
-                  names="Carros", values="Valor (R$)", title="Ganhos por Carro")
-    st.plotly_chart(fig3)
+st.subheader("Receita por Carro")
+fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
+              names="Carros", values="Valor (R$)", title="Ganhos por Carro")
+st.plotly_chart(fig3)
 
-# Criar gráfico de linha para evolução do faturamento no trimestre
-df_trimestre = df[df["Trimestre"] == trimestre_selecionado].groupby(["Mês do Pagamento"])["Valor (R$)"].sum().reset_index()
-
-with col4:
-    st.subheader("Evolução do Faturamento")
-    fig4 = px.line(df_trimestre, x="Mês do Pagamento", y="Valor (R$)", title=f"Faturamento {trimestre_selecionado}")
-    st.plotly_chart(fig4)
 # Mostrar totais
 st.subheader("Totais")
 total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
@@ -148,3 +125,13 @@ st.write(f"Total de Despesas: R$ {total_despesas:,.2f}")
 st.write(f"Total de Receitas: R$ {total_receitas:,.2f}")
 st.write(f"Lucro: R$ {lucro:,.2f}")
 st.write(f"Dízimo (10% do Lucro): R$ {dizimo:,.2f}")
+# Adicionar contorno aos totais
+st.markdown("""
+    <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
+        <h3>Totais</h3>
+        <p><strong>Total de Despesas:</strong> R$ {:,.2f}</p>
+        <p><strong>Total de Receitas:</strong> R$ {:,.2f}</p>
+        <p><strong>Lucro:</strong> R$ {:,.2f}</p>
+        <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
+    </div>
+""".format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
