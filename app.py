@@ -79,18 +79,23 @@ df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".").astype(float)
 df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
-# Criar uma nova coluna de trimestre
+
+# Mapear nomes dos meses para números
+meses_map = {
+    "jan": 1, "fev": 2, "mar": 3, "abr": 4, "mai": 5, "jun": 6,
+    "jul": 7, "ago": 8, "set": 9, "out": 10, "nov": 11, "dez": 12
+}
+df["Mês do Pagamento"] = df["Mês do Pagamento"].map(meses_map)
 # Criar nova coluna de trimestre
 df["Trimestre"] = pd.to_datetime(df["Mês do Pagamento"], format='%m').dt.to_period("Q")
 
 # Criar filtros interativos
 st.sidebar.header("Filtros")
-trimestre_selecionado = st.sidebar.selectbox("Selecione o Trimestre", df["Trimestre"].unique())
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
 dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s) da Semana", 
                                                 df["Dia do Pagamento"].unique(), 
                                                 default=df["Dia do Pagamento"].unique())
-
+trimestre_selecionado = st.sidebar.selectbox("Selecione o Trimestre", df["Trimestre"].astype(str).unique())
 # Adiciona o logo na barra lateral
 st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
