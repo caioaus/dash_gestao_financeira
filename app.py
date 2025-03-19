@@ -122,10 +122,7 @@ lucro = total_receitas - total_despesas
 dizimo = lucro * 0.1
 
 st.write(df_filtrado)
-st.write(f"Total de Despesas: R$ {total_despesas:,.2f}")
-st.write(f"Total de Receitas: R$ {total_receitas:,.2f}")
-st.write(f"Lucro: R$ {lucro:,.2f}")
-st.write(f"Dízimo (10% do Lucro): R$ {dizimo:,.2f}")
+
 # Adicionar contorno aos totais
 st.markdown("""
     <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
