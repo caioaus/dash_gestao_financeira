@@ -80,17 +80,8 @@ df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 # Criar uma nova coluna de trimestre
-def definir_trimestre(mes):
-    if mes in [1, 2, 3]:
-        return "1º Trimestre"
-    elif mes in [4, 5, 6]:
-        return "2º Trimestre"
-    elif mes in [7, 8, 9]:
-        return "3º Trimestre"
-    else:
-        return "4º Trimestre"
-
-df["Trimestre"] = df["Mês do Pagamento"].apply(definir_trimestre)
+# Criar nova coluna de trimestre
+df["Trimestre"] = pd.to_datetime(df["Mês do Pagamento"], format='%m').dt.to_period("Q")
 
 # Criar filtros interativos
 st.sidebar.header("Filtros")
@@ -138,9 +129,8 @@ df_trimestre = df[df["Trimestre"] == trimestre_selecionado].groupby(["Mês do Pa
 
 with col4:
     st.subheader("Evolução do Faturamento")
-    fig4 = px.line(df_trimestre, x="Mês do Pagamento", y="Valor (R$)", title="Faturamento Trimestral")
+    fig4 = px.line(df_trimestre, x="Mês do Pagamento", y="Valor (R$)", title=f"Faturamento {trimestre_selecionado}")
     st.plotly_chart(fig4)
-
 # Mostrar totais
 st.subheader("Totais")
 total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
