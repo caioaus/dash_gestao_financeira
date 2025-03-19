@@ -79,40 +79,67 @@ df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".").astype(float)
 df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
+# Criar uma nova coluna de trimestre
+def definir_trimestre(mes):
+    if mes in [1, 2, 3]:
+        return "1º Trimestre"
+    elif mes in [4, 5, 6]:
+        return "2º Trimestre"
+    elif mes in [7, 8, 9]:
+        return "3º Trimestre"
+    else:
+        return "4º Trimestre"
 
-# Adiciona o logo na barra lateral
-st.sidebar.image("logo_fj.jpg", use_container_width=True)  
+df["Trimestre"] = df["Mês do Pagamento"].apply(definir_trimestre)
 
-# Criar filtros interativos (segmentações de dados)
+# Criar filtros interativos
 st.sidebar.header("Filtros")
+trimestre_selecionado = st.sidebar.selectbox("Selecione o Trimestre", df["Trimestre"].unique())
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
 dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s) da Semana", 
                                                 df["Dia do Pagamento"].unique(), 
                                                 default=df["Dia do Pagamento"].unique())
+
+# Adiciona o logo na barra lateral
+st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
 df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
 
+# Criar layout em matriz 2x2
+col1, col2 = st.columns(2)
+col3, col4 = st.columns(2)
 
 # Criar gráfico de barras para Despesas dos Carros
-st.subheader("Despesas dos Carros")
-fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
-              x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
-st.plotly_chart(fig1)
+with col1:
+    st.subheader("Despesas dos Carros")
+    fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
+                  x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
+    st.plotly_chart(fig1)
 
 # Criar gráfico de colunas para Despesas Gerais
-st.subheader("Despesas Gerais")
-fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
-              x="Tipo", y="Valor (R$)", title="Despesas Gerais")
-st.plotly_chart(fig2)
+with col2:
+    st.subheader("Despesas Gerais")
+    fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
+                  x="Tipo", y="Valor (R$)", title="Despesas Gerais")
+    st.plotly_chart(fig2)
 
 # Criar gráfico de pizza para Receitas
-st.subheader("Receita por Carro")
-fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
-              names="Carros", values="Valor (R$)", title="Ganhos por Carro")
-st.plotly_chart(fig3)
+with col3:
+    st.subheader("Receita por Carro")
+    fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
+                  names="Carros", values="Valor (R$)", title="Ganhos por Carro")
+    st.plotly_chart(fig3)
+
+# Criar gráfico de linha para evolução do faturamento no trimestre
+df_trimestre = df[df["Trimestre"] == trimestre_selecionado].groupby(["Mês do Pagamento"])["Valor (R$)"].sum().reset_index()
+
+with col4:
+    st.subheader("Evolução do Faturamento")
+    fig4 = px.line(df_trimestre, x="Mês do Pagamento", y="Valor (R$)", title="Faturamento Trimestral")
+    st.plotly_chart(fig4)
 
 # Mostrar totais
 st.subheader("Totais")
