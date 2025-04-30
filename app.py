@@ -133,3 +133,28 @@ st.markdown("""
         <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
     </div>
 """.format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
+# ==============================
+# NOVO BLOCO: Rentabilidade dos Carros
+# ==============================
+st.subheader("Rentabilidade dos Carros")
+
+# Filtrar apenas receitas e despesas dos carros
+df_carros_filtrado = df_filtrado[df_filtrado["Categoria"].isin(["Receitas", "Despesa dos Carros"])].copy()
+df_carros_filtrado = df_carros_filtrado[df_carros_filtrado["Carros"].notna()]
+
+# Agrupar e calcular
+resumo_carros = df_carros_filtrado.groupby(["Carros", "Categoria"])["Valor (R$)"].sum().unstack(fill_value=0)
+resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("Despesa dos Carros", 0)
+resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
+resumo_carros = resumo_carros.reset_index()
+
+# Gráfico do lucro por carro
+fig_rent = px.bar(
+    resumo_carros,
+    x="Carros",
+    y="Lucro",
+    color="Lucro",
+    color_continuous_scale="Blues",
+    title="Lucro Líquido por Carro no Mês Selecionado"
+)
+st.plotly_chart(fig_rent)
