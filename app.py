@@ -133,6 +133,9 @@ st.markdown("""
         <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
     </div>
 """.format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
+# ==============================
+# NOVO BLOCO: Rentabilidade dos Carros
+# ==============================
 st.subheader("Rentabilidade dos Carros")
 
 # Filtrar apenas receitas e despesas dos carros
@@ -145,22 +148,17 @@ resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("D
 resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
 resumo_carros = resumo_carros.reset_index()
 
-# Layout 2x2 usando colunas
-col1, col2 = st.columns(2)
-
-with col1:
-    fig_rent = px.bar(
-        resumo_carros,
-        x="Carros",
-        y="Lucro",
-        color="Lucro",
-        color_continuous_scale="Blues",
-        title="Lucro Líquido por Carro"
-    )
-    st.plotly_chart(fig_rent, use_container_width=True)
-
-with col2:
-    st.markdown("### Tabela de Rentabilidade")
+# Gráfico do lucro por carro
+fig_rent = px.bar(
+    resumo_carros,
+    x="Carros",
+    y="Lucro",
+    color="Lucro",
+    color_continuous_scale="Blues",
+    title="Lucro Líquido por Carro no Mês Selecionado"
+)
+st.plotly_chart(fig_rent)
+st.markdown("### Tabela de Rentabilidade")
     resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
     resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
     st.dataframe(resumo_exibicao.style.format({
