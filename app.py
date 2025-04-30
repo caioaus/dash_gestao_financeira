@@ -158,12 +158,13 @@ fig_rent = px.bar(
     title="Lucro Líquido por Carro no Mês Selecionado"
 )
 st.plotly_chart(fig_rent)
+
 st.markdown("### Tabela de Rentabilidade")
-    resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
-    resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
-    st.dataframe(resumo_exibicao.style.format({
-        "Receitas": "R$ {:,.2f}",
-        "Despesa dos Carros": "R$ {:,.2f}",
-        "Lucro": "R$ {:,.2f}",
-        "Rentabilidade (%)": "{:.2f} %"
-    }))
+resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
+resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
+st.dataframe(resumo_exibicao.style.format({
+    "Receitas": "R$ {:,.2f}",
+    "Despesa dos Carros": "R$ {:,.2f}",
+    "Lucro": "R$ {:,.2f}",
+    "Rentabilidade (%)": "{:.2f} %"
+}))
