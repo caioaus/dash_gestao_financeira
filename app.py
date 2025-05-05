@@ -189,4 +189,4 @@ st.dataframe(resumo_exibicao.style.format({
     "Rentabilidade (%)": "{:.2f} %"
 }))
 total_despesas = df[df["Categoria"] != "Receitas"]["Valor (R$)"].sum()
-print(f"Total de despesas no app: {total_despesas:,.2f}")
+
