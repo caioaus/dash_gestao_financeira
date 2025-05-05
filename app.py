@@ -83,13 +83,26 @@ df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colu
 # Adiciona o logo na barra lateral
 st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
-# Criar filtros interativos (segmentações de dados)
 st.sidebar.header("Filtros")
-mes_selecionado = st.sidebar.selectbox("Selecione o Mês", df["Mês do Pagamento"].unique())
-dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s) da Semana", 
-                                                df["Dia do Pagamento"].unique(), 
-                                                default=df["Dia do Pagamento"].unique())
 
+# Lista de meses válidos
+meses_disponiveis = sorted(df["Mês do Pagamento"].dropna().unique())
+mes_selecionado = st.sidebar.selectbox("Selecione o Mês", meses_disponiveis, index=0)
+
+# Verificar se a seleção é válida
+if mes_selecionado not in meses_disponiveis:
+    st.warning("Selecione um mês válido.")
+    st.stop()
+
+# Filtro de dia da semana
+dias_disponiveis = sorted(df["Dia do Pagamento"].dropna().unique())
+dia_semana_selecionado = st.sidebar.multiselect(
+    "Selecione o(s) Dia(s) da Semana",
+    dias_disponiveis,
+    default=dias_disponiveis
+)
+
+# Aplicar o filtro
 df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
