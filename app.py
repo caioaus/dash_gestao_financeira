@@ -74,8 +74,15 @@ st.markdown("""
 arquivo_excel = "Relatorio_Mensal_py.xlsx"
 df = pd.read_excel(arquivo_excel)
 
-df["Valor (R$)"] = df["Valor (R$)"].astype(str).str.replace(r"[^\d.,-]", "", regex=True)
-df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".").astype(float)
+# Garantir que tudo seja string para aplicar replace
+df["Valor (R$)"] = df["Valor (R$)"].astype(str)
+df["Valor (R$)"] = df["Valor (R$)"].str.replace(r"[^\d,.-]", "", regex=True)  # mantém números, vírgulas e pontos
+df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".")  # converte vírgula em ponto
+
+# Converte para float, ignorando erros
+df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors="coerce")
+df["Valor (R$)"].fillna(0, inplace=True)
+
 df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
 df["Valor (R$)"].fillna(0, inplace=True)
 df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
