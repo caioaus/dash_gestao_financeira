@@ -94,16 +94,28 @@ st.sidebar.header("Filtros")
 
 # Lista de meses válidos
 # Padroniza os nomes dos meses
-df["Mês do Pagamento"] = df["Mês do Pagamento"].astype(str).str.lower().str.strip()
+# Cria um dicionário com a ordem correta dos meses
+ordem_meses_dict = {
+    "jan": 1, "fev": 2, "mar": 3, "abr": 4, "mai": 5, "jun": 6,
+    "jul": 7, "ago": 8, "set": 9, "out": 10, "nov": 11, "dez": 12
+}
 
-# Ordem correta dos meses
-ordem_meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+# Padroniza os nomes dos meses na coluna
+df["Mês do Pagamento"] = df["Mês do Pagamento"].astype(str).str.lower().str[:3]  # pega os 3 primeiros caracteres
 
-# Filtra e ordena os meses disponíveis
-meses_unicos = df["Mês do Pagamento"].dropna().unique()
-meses_disponiveis = [mes for mes in ordem_meses if mes in meses_unicos]
+# Cria uma coluna auxiliar para ordenar os meses
+df["Ordem Mês"] = df["Mês do Pagamento"].map(ordem_meses_dict)
 
-# Selectbox com a ordem correta
+# Remove duplicatas e ordena corretamente
+meses_disponiveis = (
+    df[["Mês do Pagamento", "Ordem Mês"]]
+    .dropna()
+    .drop_duplicates()
+    .sort_values("Ordem Mês")["Mês do Pagamento"]
+    .tolist()
+)
+
+# Selectbox com os meses ordenados
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", meses_disponiveis, index=0)
 
 
