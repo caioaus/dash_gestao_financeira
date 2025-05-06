@@ -93,8 +93,19 @@ st.sidebar.image("logo_fj.jpg", use_container_width=True)
 st.sidebar.header("Filtros")
 
 # Lista de meses válidos
-meses_disponiveis = sorted(df["Mês do Pagamento"].dropna().unique())
+# Padroniza os nomes dos meses
+df["Mês do Pagamento"] = df["Mês do Pagamento"].astype(str).str.lower().str.strip()
+
+# Ordem correta dos meses
+ordem_meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+# Filtra e ordena os meses disponíveis
+meses_unicos = df["Mês do Pagamento"].dropna().unique()
+meses_disponiveis = [mes for mes in ordem_meses if mes in meses_unicos]
+
+# Selectbox com a ordem correta
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", meses_disponiveis, index=0)
+
 
 # Verificar se a seleção é válida
 if mes_selecionado not in meses_disponiveis:
