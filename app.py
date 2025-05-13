@@ -223,3 +223,76 @@ with aba1:
 with aba2:
     st.header("Indicadores Financeiros")
     st.write("🔧 Em breve: cartões estilo semáforo com KPIs como Rentabilidade, Comprometimento e Saldo.")
+    elif aba == "Indicadores Financeiros":
+    st.markdown("<h2 style='color:white;'>Indicadores Financeiros</h2>", unsafe_allow_html=True)
+    st.markdown("📌 <em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
+
+    # Filtra os dados conforme mês e dia da semana selecionados
+    dados_filtrados = df[
+        (df["Mês"].str.lower() == mes.lower()) &
+        (df["Dia da Semana"].isin(dias_semana))
+    ]
+
+    # Cálculo dos totais com base no filtro
+    total_receita = dados_filtrados[dados_filtrados["Categoria"] == "Receitas"]["Valor"].sum()
+    total_despesa = dados_filtrados[dados_filtrados["Categoria"].str.contains("Despesa")]["Valor"].sum()
+    total_dizimo = dados_filtrados[dados_filtrados["Tipo"].str.lower() == "dízimo"]["Valor"].sum()
+    lucro = total_receita - total_despesa
+
+    # Cálculo dos Indicadores
+    rentabilidade = lucro / total_receita if total_receita != 0 else 0
+    comprometimento = total_despesa / total_receita if total_receita != 0 else 0
+    saldo_pos_dizimo = lucro - total_dizimo
+
+    # Função para cor estilo semáforo
+    def cor_indicador(valor, tipo):
+        if tipo == "rentabilidade":
+            if valor >= 0.5:
+                return "green"
+            elif valor >= 0.3:
+                return "orange"
+            else:
+                return "red"
+        elif tipo == "comprometimento":
+            if valor <= 0.5:
+                return "green"
+            elif valor <= 0.7:
+                return "orange"
+            else:
+                return "red"
+        elif tipo == "saldo":
+            return "green" if valor >= 0 else "red"
+
+    # Layout com colunas
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(
+            f"<div style='background-color:{cor_indicador(rentabilidade, 'rentabilidade')};"
+            f"padding:20px;border-radius:10px;text-align:center'>"
+            f"<h4 style='color:white'>Rentabilidade</h4>"
+            f"<p style='color:white;font-size:24px'>{rentabilidade:.2%}</p>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
+    with col2:
+        st.markdown(
+            f"<div style='background-color:{cor_indicador(comprometimento, 'comprometimento')};"
+            f"padding:20px;border-radius:10px;text-align:center'>"
+            f"<h4 style='color:white'>Comprometimento</h4>"
+            f"<p style='color:white;font-size:24px'>{comprometimento:.2%}</p>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
+    with col3:
+        st.markdown(
+            f"<div style='background-color:{cor_indicador(saldo_pos_dizimo, 'saldo')};"
+            f"padding:20px;border-radius:10px;text-align:center'>"
+            f"<h4 style='color:white'>Saldo após Dízimo</h4>"
+            f"<p style='color:white;font-size:24px'>R$ {saldo_pos_dizimo:,.2f}</p>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
