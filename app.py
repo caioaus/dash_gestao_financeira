@@ -248,19 +248,23 @@ with aba2:
             if valor >= 0.5:
                 return "green"
             elif valor >= 0.3:
-                return "orange"
+                return "yellow"
             else:
                 return "red"
-        elif tipo == "comprometimento":
-            if valor <= 0.5:
+        if tipo == "comprometimento":
+            if valor >= 0.5:
                 return "green"
             elif valor <= 0.7:
-                return "orange"
+                return "yellow"
             else:
                 return "red"
-        elif tipo == "saldo":
-            return "green" if valor >= 0 else "red"
-
+        if tipo == "saldo":
+            if valor >=0:
+                return "green"
+            elif valor >= 0.3:
+                return "yellow"
+            else:
+                return "red"
     # Layout com colunas
     col1, col2, col3 = st.columns(3)
 
