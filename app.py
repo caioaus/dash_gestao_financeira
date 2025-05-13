@@ -1,40 +1,63 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# ==============================
-# Estilo do app e título
-# ==============================
 st.markdown(
     """
     <style>
+        /* Fundo com degradê */
         .stApp {
             background: linear-gradient(135deg, #FF4136, #111);
             color: white;
         }
+        
+        /* Ajusta a cor do texto */
         h1, h2, h3, h4, h5, h6, p, .stTextInput, .stSelectbox, .stButton {
             color: white !important;
         }
+
+        /* Estiliza os gráficos */
         .stPlotlyChart {
             background-color: rgba(255, 255, 255, 0.1);
             padding: 10px;
             border-radius: 10px;
         }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+    <style>
+        /* Cor da barra lateral */
         section[data-testid="stSidebar"] {
             background-color: black;
             color: red;
         }
+
+        /* Ajuste para os textos dentro da barra lateral */
         section[data-testid="stSidebar"] * {
             color: red !important;
         }
+
+        /* Ajuste específico para os meses no selectbox */
+        section[data-testid="stSidebar"] select {
+            color: red !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+import pandas as pd
+import plotly.express as px
+
+st.markdown("""
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+        /* Estilização do título */
         .titulo-container {
-            background-color: #800000;
+            background-color: #800000;  /* Um tom de vermelho escuro elegante */
             padding: 15px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5); /* Efeito de relevo */
         }
+
         .titulo-texto {
             font-size: 45px;
             font-weight: bold;
@@ -46,45 +69,44 @@ st.markdown(
     <div class="titulo-container">
         <p class="titulo-texto">Gestão Financeira</p>
     </div>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
+# Carregar os dados
+arquivo_excel = "Relatorio_Mensal_py.xlsx"
+df = pd.read_excel(arquivo_excel)
 
-# ==============================
-# Upload de Arquivo
-# ==============================
-st.sidebar.image("logo_fj.jpg", use_container_width=True)
-arquivo = st.sidebar.file_uploader("Carregue o arquivo Excel", type=["xlsx"])
+# Garantir que tudo seja string para aplicar replace
+df["Valor (R$)"] = df["Valor (R$)"].astype(str)
+df["Valor (R$)"] = df["Valor (R$)"].str.replace(r"[^\d,.-]", "", regex=True)  # mantém números, vírgulas e pontos
+df["Valor (R$)"] = df["Valor (R$)"].str.replace(",", ".")  # converte vírgula em ponto
 
-if not arquivo:
-    st.warning("Por favor, carregue um arquivo Excel (.xlsx) com a aba 'Relatório Mensal'.")
-    st.stop()
+# Converte para float, ignorando erros
+df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors="coerce")
+df["Valor (R$)"].fillna(0, inplace=True)
 
-# ==============================
-# Leitura da aba principal
-# ==============================
-abas = pd.read_excel(arquivo, sheet_name=None)
-relatorio = abas.get("Relatório Mensal")
+df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce')
+df["Valor (R$)"].fillna(0, inplace=True)
+df.columns = df.columns.str.strip()  # Remove espaços extras nos nomes das colunas
 
-if relatorio is None:
-    st.error("A aba 'Relatório Mensal' não foi encontrada.")
-    st.stop()
+# Adiciona o logo na barra lateral
+st.sidebar.image("logo_fj.jpg", use_container_width=True)  
 
-# ==============================
-# Tratamento dos dados
-# ==============================
-df = relatorio.copy()
-df.columns = df.columns.str.strip()
-df["Valor (R$)"] = df["Valor (R$)"].astype(str).str.replace(r"[^\d,.-]", "", regex=True).str.replace(",", ".")
-df["Valor (R$)"] = pd.to_numeric(df["Valor (R$)"], errors='coerce').fillna(0)
+st.sidebar.header("Filtros")
 
-# Filtros
+# Lista de meses válidos
+# Padroniza os nomes dos meses
+# Cria um dicionário com a ordem correta dos meses
 ordem_meses_dict = {
     "jan": 1, "fev": 2, "mar": 3, "abr": 4, "mai": 5, "jun": 6,
     "jul": 7, "ago": 8, "set": 9, "out": 10, "nov": 11, "dez": 12
 }
-df["Mês do Pagamento"] = df["Mês do Pagamento"].astype(str).str.lower().str[:3]
+
+# Padroniza os nomes dos meses na coluna
+df["Mês do Pagamento"] = df["Mês do Pagamento"].astype(str).str.lower().str[:3]  # pega os 3 primeiros caracteres
+
+# Cria uma coluna auxiliar para ordenar os meses
 df["Ordem Mês"] = df["Mês do Pagamento"].map(ordem_meses_dict)
+
+# Remove duplicatas e ordena corretamente
 meses_disponiveis = (
     df[["Mês do Pagamento", "Ordem Mês"]]
     .dropna()
@@ -93,92 +115,102 @@ meses_disponiveis = (
     .tolist()
 )
 
+# Selectbox com os meses ordenados
 mes_selecionado = st.sidebar.selectbox("Selecione o Mês", meses_disponiveis, index=0)
-dias_disponiveis = sorted(df["Dia do Pagamento"].dropna().unique())
-dia_semana_selecionado = st.sidebar.multiselect("Selecione o(s) Dia(s)", dias_disponiveis, default=dias_disponiveis)
 
+
+# Verificar se a seleção é válida
+if mes_selecionado not in meses_disponiveis:
+    st.warning("Selecione um mês válido.")
+    st.stop()
+
+# Filtro de dia da semana
+dias_disponiveis = sorted(df["Dia do Pagamento"].dropna().unique())
+dia_semana_selecionado = st.sidebar.multiselect(
+    "Selecione o(s) Dia(s) da Semana",
+    dias_disponiveis,
+    default=dias_disponiveis
+)
+
+# Aplicar o filtro
 df_filtrado = df[
     (df["Mês do Pagamento"] == mes_selecionado) & 
     (df["Dia do Pagamento"].isin(dia_semana_selecionado))
 ]
 
+
+# Criar gráfico de barras para Despesas dos Carros
+st.subheader("Despesas dos Carros")
+fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
+              x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
+st.plotly_chart(fig1)
+
+# Criar gráfico de colunas para Despesas Gerais
+st.subheader("Despesas Gerais")
+fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
+              x="Tipo", y="Valor (R$)", title="Despesas Gerais")
+st.plotly_chart(fig2)
+
+# Criar gráfico de pizza para Receitas
+st.subheader("Receita por Carro")
+fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
+              names="Carros", values="Valor (R$)", title="Ganhos por Carro")
+st.plotly_chart(fig3)
+
+# Mostrar totais
+st.subheader("Totais")
+total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
+total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
+lucro = total_receitas - total_despesas
+dizimo = lucro * 0.1
+
+st.write(df_filtrado)
+
+# Adicionar contorno aos totais
+st.markdown("""
+    <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
+        <h3>Totais</h3>
+        <p><strong>Total de Despesas:</strong> R$ {:,.2f}</p>
+        <p><strong>Total de Receitas:</strong> R$ {:,.2f}</p>
+        <p><strong>Lucro:</strong> R$ {:,.2f}</p>
+        <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
+    </div>
+""".format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
 # ==============================
-# Abas da Interface
+# NOVO BLOCO: Rentabilidade dos Carros
 # ==============================
-aba1, aba2, aba3 = st.tabs(["📊 Gráficos", "🧮 Totais", "🚗 Rentabilidade"])
+st.subheader("Rentabilidade dos Carros")
 
-# ---------------------
-# ABA 1 - Gráficos
-# ---------------------
-with aba1:
-    st.subheader("Despesas dos Carros")
-    fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
-                  x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
-    st.plotly_chart(fig1)
+# Filtrar apenas receitas e despesas dos carros
+df_carros_filtrado = df_filtrado[df_filtrado["Categoria"].isin(["Receitas", "Despesa dos Carros"])].copy()
+df_carros_filtrado = df_carros_filtrado[df_carros_filtrado["Carros"].notna()]
 
-    st.subheader("Despesas Gerais")
-    fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
-                  x="Tipo", y="Valor (R$)", title="Despesas Gerais")
-    st.plotly_chart(fig2)
+# Agrupar e calcular
+resumo_carros = df_carros_filtrado.groupby(["Carros", "Categoria"])["Valor (R$)"].sum().unstack(fill_value=0)
+resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("Despesa dos Carros", 0)
+resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
+resumo_carros = resumo_carros.reset_index()
 
-    st.subheader("Receita por Carro")
-    fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
-                  names="Carros", values="Valor (R$)", title="Ganhos por Carro")
-    st.plotly_chart(fig3)
+# Gráfico do lucro por carro
+fig_rent = px.bar(
+    resumo_carros,
+    x="Carros",
+    y="Lucro",
+    color="Lucro",
+    color_continuous_scale="Blues",
+    title="Lucro Líquido por Carro no Mês Selecionado"
+)
+st.plotly_chart(fig_rent)
 
-# ---------------------
-# ABA 2 - Totais
-# ---------------------
-with aba2:
-    st.subheader("Totais do Mês Selecionado")
-    total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
-    total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
-    lucro = total_receitas - total_despesas
-    dizimo = lucro * 0.1
-
-    st.markdown("""
-        <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
-            <h3>Totais</h3>
-            <p><strong>Total de Despesas:</strong> R$ {:,.2f}</p>
-            <p><strong>Total de Receitas:</strong> R$ {:,.2f}</p>
-            <p><strong>Lucro:</strong> R$ {:,.2f}</p>
-            <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
-        </div>
-    """.format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
-
-# ---------------------
-# ABA 3 - Rentabilidade
-# ---------------------
-with aba3:
-    st.subheader("Rentabilidade dos Carros")
-    df_carros_filtrado = df_filtrado[df_filtrado["Categoria"].isin(["Receitas", "Despesa dos Carros"])].copy()
-    df_carros_filtrado = df_carros_filtrado[df_carros_filtrado["Carros"].notna()]
-    resumo_carros = df_carros_filtrado.groupby(["Carros", "Categoria"])["Valor (R$)"].sum().unstack(fill_value=0)
-    resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("Despesa dos Carros", 0)
-    resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
-    resumo_carros = resumo_carros.reset_index()
-
-    fig_rent = px.bar(
-        resumo_carros,
-        x="Carros",
-        y="Lucro",
-        color="Lucro",
-        color_continuous_scale="Blues",
-        title="Lucro Líquido por Carro no Mês Selecionado"
-    )
-    st.plotly_chart(fig_rent)
-
-    st.markdown("### Tabela de Rentabilidade")
-    resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
-    resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
-    st.dataframe(resumo_exibicao.style.format({
-        "Receitas": "R$ {:,.2f}",
-        "Despesa dos Carros": "R$ {:,.2f}",
-        "Lucro": "R$ {:,.2f}",
-        "Rentabilidade (%)": "{:.2f} %"
-    }))
-
-
-
+st.markdown("### Tabela de Rentabilidade")
+resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
+resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
+st.dataframe(resumo_exibicao.style.format({
+    "Receitas": "R$ {:,.2f}",
+    "Despesa dos Carros": "R$ {:,.2f}",
+    "Lucro": "R$ {:,.2f}",
+    "Rentabilidade (%)": "{:.2f} %"
+}))
+total_despesas = df[df["Categoria"] != "Receitas"]["Valor (R$)"].sum()
 
 
