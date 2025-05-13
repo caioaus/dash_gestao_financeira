@@ -245,26 +245,32 @@ with aba2:
     # Função para cor estilo semáforo
     def cor_indicador(valor, tipo):
         if tipo == "rentabilidade":
+        # Rentabilidade alta é bom
             if valor >= 0.5:
                 return "green"
             elif valor >= 0.3:
                 return "yellow"
             else:
                 return "red"
-        if tipo == "comprometimento":
-            if valor >= 0.5:
+    
+        elif tipo == "comprometimento":
+        # Comprometimento baixo é bom
+            if valor <= 0.5:
                 return "green"
             elif valor <= 0.7:
                 return "yellow"
             else:
                 return "red"
-        if tipo == "saldo":
-            if valor >=0:
+    
+        elif tipo == "saldo":
+        # Qualquer saldo positivo é bom
+            if valor >= 0:
                 return "green"
-            elif valor >= 0.3:
+            elif valor >= -0.3:
                 return "yellow"
             else:
                 return "red"
+
     # Layout com colunas
     col1, col2, col3 = st.columns(3)
 
