@@ -223,26 +223,24 @@ with aba1:
 with aba2:
     st.header("Indicadores Financeiros")
     st.write("🔧 Em breve: cartões estilo semáforo com KPIs como Rentabilidade, Comprometimento e Saldo.")
-    elif aba2 == "Indicadores Financeiros":
-    st.markdown("<h2 style='color:white;'>Indicadores Financeiros</h2>", unsafe_allow_html=True)
+    st.header("Indicadores Financeiros")
     st.markdown("📌 <em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
 
-    # Filtra os dados conforme mês e dia da semana selecionados
-    dados_filtrados = df[
-        (df["Mês"].str.lower() == mes.lower()) &
-        (df["Dia da Semana"].isin(dias_semana))
-    ]
+    # Cálculo dos indicadores
+    total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
+    total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
+    lucro = total_receitas - total_despesas
+    dizimo = lucro * 0.10
 
-    # Cálculo dos totais com base no filtro
-    total_receita = dados_filtrados[dados_filtrados["Categoria"] == "Receitas"]["Valor"].sum()
-    total_despesa = dados_filtrados[dados_filtrados["Categoria"].str.contains("Despesa")]["Valor"].sum()
-    total_dizimo = dados_filtrados[dados_filtrados["Tipo"].str.lower() == "dízimo"]["Valor"].sum()
-    lucro = total_receita - total_despesa
+    rentabilidade = (lucro / total_receitas) * 100 if total_receitas else 0
+    comprometimento = (total_despesas / total_receitas) * 100 if total_receitas else 0
+    saldo_pos_dizimo = lucro - dizimo
 
-    # Cálculo dos Indicadores
-    rentabilidade = lucro / total_receita if total_receita != 0 else 0
-    comprometimento = total_despesa / total_receita if total_receita != 0 else 0
-    saldo_pos_dizimo = lucro - total_dizimo
+    # Exibir os resultados (temporariamente como texto)
+    st.subheader("🔍 Indicadores:")
+    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f} %")
+    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f} %")
+    st.markdown(f"- **Saldo após Dízimo:** R$ {saldo_pos_dizimo:,.2f}")
 
     # Função para cor estilo semáforo
     def cor_indicador(valor, tipo):
