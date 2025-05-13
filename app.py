@@ -139,78 +139,87 @@ df_filtrado = df[
 ]
 
 
-# Criar gráfico de barras para Despesas dos Carros
-st.subheader("Despesas dos Carros")
-fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
-              x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
-st.plotly_chart(fig1)
+# Criação das abas
+aba1, aba2 = st.tabs(["📊 Análises", "📈 Indicadores Financeiros"])
 
-# Criar gráfico de colunas para Despesas Gerais
-st.subheader("Despesas Gerais")
-fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
-              x="Tipo", y="Valor (R$)", title="Despesas Gerais")
-st.plotly_chart(fig2)
+# ============================
+# ABA 1 - Análises Visuais
+# ============================
+with aba1:
+    # Criar gráfico de barras para Despesas dos Carros
+    st.subheader("Despesas dos Carros")
+    fig1 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesa dos Carros"], 
+                  x="Tipo", y="Valor (R$)", color="Carros", title="Despesas por Tipo")
+    st.plotly_chart(fig1)
 
-# Criar gráfico de pizza para Receitas
-st.subheader("Receita por Carro")
-fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
-              names="Carros", values="Valor (R$)", title="Ganhos por Carro")
-st.plotly_chart(fig3)
+    # Criar gráfico de colunas para Despesas Gerais
+    st.subheader("Despesas Gerais")
+    fig2 = px.bar(df_filtrado[df_filtrado["Categoria"] == "Despesas Gerais"], 
+                  x="Tipo", y="Valor (R$)", title="Despesas Gerais")
+    st.plotly_chart(fig2)
 
-# Mostrar totais
-st.subheader("Totais")
-total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
-total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
-lucro = total_receitas - total_despesas
-dizimo = lucro * 0.1
+    # Criar gráfico de pizza para Receitas
+    st.subheader("Receita por Carro")
+    fig3 = px.pie(df_filtrado[df_filtrado["Categoria"] == "Receitas"], 
+                  names="Carros", values="Valor (R$)", title="Ganhos por Carro")
+    st.plotly_chart(fig3)
 
-st.write(df_filtrado)
+    # Mostrar totais
+    st.subheader("Totais")
+    total_despesas = df_filtrado[df_filtrado["Categoria"].isin(["Despesa dos Carros", "Despesas Gerais"])]["Valor (R$)"].sum()
+    total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
+    lucro = total_receitas - total_despesas
+    dizimo = lucro * 0.1
 
-# Adicionar contorno aos totais
-st.markdown("""
-    <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
-        <h3>Totais</h3>
-        <p><strong>Total de Despesas:</strong> R$ {:,.2f}</p>
-        <p><strong>Total de Receitas:</strong> R$ {:,.2f}</p>
-        <p><strong>Lucro:</strong> R$ {:,.2f}</p>
-        <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
-    </div>
-""".format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
-# ==============================
-# NOVO BLOCO: Rentabilidade dos Carros
-# ==============================
-st.subheader("Rentabilidade dos Carros")
+    st.markdown("""
+        <div style="border: 2px solid black; padding: 10px; border-radius: 10px; text-align: center;">
+            <h3>Totais</h3>
+            <p><strong>Total de Despesas:</strong> R$ {:,.2f}</p>
+            <p><strong>Total de Receitas:</strong> R$ {:,.2f}</p>
+            <p><strong>Lucro:</strong> R$ {:,.2f}</p>
+            <p><strong>Dízimo (10% do Lucro):</strong> R$ {:,.2f}</p>
+        </div>
+    """.format(total_despesas, total_receitas, lucro, dizimo), unsafe_allow_html=True)
 
-# Filtrar apenas receitas e despesas dos carros
-df_carros_filtrado = df_filtrado[df_filtrado["Categoria"].isin(["Receitas", "Despesa dos Carros"])].copy()
-df_carros_filtrado = df_carros_filtrado[df_carros_filtrado["Carros"].notna()]
+    # ============================
+    # Rentabilidade dos Carros
+    # ============================
+    st.subheader("Rentabilidade dos Carros")
 
-# Agrupar e calcular
-resumo_carros = df_carros_filtrado.groupby(["Carros", "Categoria"])["Valor (R$)"].sum().unstack(fill_value=0)
-resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("Despesa dos Carros", 0)
-resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
-resumo_carros = resumo_carros.reset_index()
+    # Filtrar apenas receitas e despesas dos carros
+    df_carros_filtrado = df_filtrado[df_filtrado["Categoria"].isin(["Receitas", "Despesa dos Carros"])].copy()
+    df_carros_filtrado = df_carros_filtrado[df_carros_filtrado["Carros"].notna()]
 
-# Gráfico do lucro por carro
-fig_rent = px.bar(
-    resumo_carros,
-    x="Carros",
-    y="Lucro",
-    color="Lucro",
-    color_continuous_scale="Blues",
-    title="Lucro Líquido por Carro no Mês Selecionado"
-)
-st.plotly_chart(fig_rent)
+    # Agrupar e calcular
+    resumo_carros = df_carros_filtrado.groupby(["Carros", "Categoria"])["Valor (R$)"].sum().unstack(fill_value=0)
+    resumo_carros["Lucro"] = resumo_carros.get("Receitas", 0) - resumo_carros.get("Despesa dos Carros", 0)
+    resumo_carros["Rentabilidade (%)"] = (resumo_carros["Lucro"] / resumo_carros.get("Despesa dos Carros", 1)) * 100
+    resumo_carros = resumo_carros.reset_index()
 
-st.markdown("### Tabela de Rentabilidade")
-resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
-resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
-st.dataframe(resumo_exibicao.style.format({
-    "Receitas": "R$ {:,.2f}",
-    "Despesa dos Carros": "R$ {:,.2f}",
-    "Lucro": "R$ {:,.2f}",
-    "Rentabilidade (%)": "{:.2f} %"
-}))
-total_despesas = df[df["Categoria"] != "Receitas"]["Valor (R$)"].sum()
+    # Gráfico do lucro por carro
+    fig_rent = px.bar(
+        resumo_carros,
+        x="Carros",
+        y="Lucro",
+        color="Lucro",
+        color_continuous_scale="Blues",
+        title="Lucro Líquido por Carro no Mês Selecionado"
+    )
+    st.plotly_chart(fig_rent)
 
+    st.markdown("### Tabela de Rentabilidade")
+    resumo_exibicao = resumo_carros[["Carros", "Receitas", "Despesa dos Carros", "Lucro", "Rentabilidade (%)"]].copy()
+    resumo_exibicao["Rentabilidade (%)"] = resumo_exibicao["Rentabilidade (%)"].round(2)
+    st.dataframe(resumo_exibicao.style.format({
+        "Receitas": "R$ {:,.2f}",
+        "Despesa dos Carros": "R$ {:,.2f}",
+        "Lucro": "R$ {:,.2f}",
+        "Rentabilidade (%)": "{:.2f} %"
+    }))
 
+# ============================
+# ABA 2 - Indicadores Financeiros
+# ============================
+with aba2:
+    st.header("Indicadores Financeiros")
+    st.write("🔧 Em breve: cartões estilo semáforo com KPIs como Rentabilidade, Comprometimento e Saldo.")
