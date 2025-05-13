@@ -238,8 +238,8 @@ with aba2:
 
     # Exibir os resultados 
     st.subheader("🔍 Indicadores:")
-    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2}%")
-    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2}%")
+    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f}%")
+    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2g}%")
     st.markdown(f"- **Saldo após Dízimo:** R$ {saldo_pos_dizimo:,.2f}")
 
     # Função para cor estilo semáforo
