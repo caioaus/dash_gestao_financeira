@@ -234,6 +234,7 @@ with aba2:
 
     rentabilidade = (lucro / total_receitas) * 100 if total_receitas else 0
     comprometimento = (total_despesas / total_receitas) * 100 if total_receitas else 0
+
     saldo_pos_dizimo = lucro - dizimo
 
     # Exibir os resultados (temporariamente como texto)
