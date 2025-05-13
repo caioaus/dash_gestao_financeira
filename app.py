@@ -231,15 +231,15 @@ with aba2:
     lucro = total_receitas - total_despesas
     dizimo = lucro * 0.10
 
-    rentabilidade = (lucro / total_receitas) * 100 if total_receitas else 0
-    comprometimento = (total_despesas / total_receitas) * 100 if total_receitas else 0
+    rentabilidade = (lucro / total_receitas) if total_receitas else 0
+    comprometimento = (total_despesas / total_receitas) if total_receitas else 0
 
     saldo_pos_dizimo = lucro - dizimo
 
     # Exibir os resultados 
     st.subheader("🔍 Indicadores:")
-    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f}")
-    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f}")
+    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f}%")
+    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f}%")
     st.markdown(f"- **Saldo após Dízimo:** R$ {saldo_pos_dizimo:,.2f}")
 
     # Função para cor estilo semáforo
