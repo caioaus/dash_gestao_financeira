@@ -221,8 +221,7 @@ with aba1:
 # ABA 2 - Indicadores Financeiros
 # ============================
 with aba2:
-    st.header("Indicadores Financeiros")
-    st.write("🔧 Em breve: cartões estilo semáforo com KPIs como Rentabilidade, Comprometimento e Saldo.")
+    
     st.header("Indicadores Financeiros")
     st.markdown("📌 <em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
 
@@ -237,10 +236,10 @@ with aba2:
 
     saldo_pos_dizimo = lucro - dizimo
 
-    # Exibir os resultados (temporariamente como texto)
+    # Exibir os resultados 
     st.subheader("🔍 Indicadores:")
-    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f} %")
-    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f} %")
+    st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f}")
+    st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f}")
     st.markdown(f"- **Saldo após Dízimo:** R$ {saldo_pos_dizimo:,.2f}")
 
     # Função para cor estilo semáforo
@@ -270,7 +269,7 @@ with aba2:
             f"<div style='background-color:{cor_indicador(rentabilidade, 'rentabilidade')};"
             f"padding:20px;border-radius:10px;text-align:center'>"
             f"<h4 style='color:white'>Rentabilidade</h4>"
-            f"<p style='color:white;font-size:24px'>{rentabilidade:.2%}</p>"
+            f"<p style='color:white;font-size:24px'>{rentabilidade:.2%}"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -280,7 +279,7 @@ with aba2:
             f"<div style='background-color:{cor_indicador(comprometimento, 'comprometimento')};"
             f"padding:20px;border-radius:10px;text-align:center'>"
             f"<h4 style='color:white'>Comprometimento</h4>"
-            f"<p style='color:white;font-size:24px'>{comprometimento:.2%}</p>"
+            f"<p style='color:white;font-size:24px'>{comprometimento:.2%}"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -290,7 +289,7 @@ with aba2:
             f"<div style='background-color:{cor_indicador(saldo_pos_dizimo, 'saldo')};"
             f"padding:20px;border-radius:10px;text-align:center'>"
             f"<h4 style='color:white'>Saldo após Dízimo</h4>"
-            f"<p style='color:white;font-size:24px'>R$ {saldo_pos_dizimo:,.2f}</p>"
+            f"<p style='color:white;font-size:24px'>R$ {saldo_pos_dizimo:,.2f}"
             f"</div>",
             unsafe_allow_html=True
         )
