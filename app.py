@@ -223,7 +223,7 @@ with aba1:
 with aba2:
     st.header("Indicadores Financeiros")
     st.write("🔧 Em breve: cartões estilo semáforo com KPIs como Rentabilidade, Comprometimento e Saldo.")
-    elif aba == "Indicadores Financeiros":
+    elif aba2 == "Indicadores Financeiros":
     st.markdown("<h2 style='color:white;'>Indicadores Financeiros</h2>", unsafe_allow_html=True)
     st.markdown("📌 <em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
 
