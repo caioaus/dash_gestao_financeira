@@ -223,7 +223,7 @@ with aba1:
 with aba2:
     
     st.header("Indicadores Financeiros")
-    st.markdown("📌 <em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
+    st.markdown("<em>Indicadores calculados com base nos filtros de mês e dias da semana selecionados.</em>", unsafe_allow_html=True)
 
     # Cálculo dos indicadores
     total_receitas = df_filtrado[df_filtrado["Categoria"] == "Receitas"]["Valor (R$)"].sum()
@@ -237,7 +237,7 @@ with aba2:
     saldo_pos_dizimo = lucro - dizimo
 
     # Exibir os resultados 
-    st.subheader("🔍 Indicadores:")
+    st.subheader("Indicadores:")
     st.markdown(f"- **Rentabilidade:** {rentabilidade:.2f}")
     st.markdown(f"- **Comprometimento com Despesas:** {comprometimento:.2f}")
     st.markdown(f"- **Saldo após Dízimo:** R$ {saldo_pos_dizimo:,.2f}")
